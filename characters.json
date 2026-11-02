@@ -1,0 +1,68 @@
+[
+  {
+    "id": "blank-base",
+    "label": "YOUR BLANK BASE",
+    "torso": 153,
+    "upper_arm": 78,
+    "forearm": 76,
+    "thigh": 102,
+    "shin": 102,
+    "shoulder_width": 95,
+    "hip_width": 65,
+    "head_radius": 66,
+    "body_width": 85,
+    "skin": [
+      253,
+      252,
+      255
+    ],
+    "outline": [
+      24,
+      26,
+      28
+    ],
+    "rig_family": "humanoid",
+    "appearance": {
+      "renderer": "white-outline-2.5d",
+      "rest_hand": "assets/hand-rest.png",
+      "thumb_hand": "assets/hand_thumb.png",
+      "shoes": {
+        "L": "assets/shoe_left.png",
+        "R": "assets/shoe_right.png"
+      }
+    }
+  },
+  {
+    "id": "proportion-check",
+    "label": "SAME ACTIONS / TALLER TEST",
+    "torso": 168,
+    "upper_arm": 88,
+    "forearm": 84,
+    "thigh": 119,
+    "shin": 116,
+    "shoulder_width": 86,
+    "hip_width": 60,
+    "head_radius": 61,
+    "body_width": 78,
+    "skin": [
+      253,
+      252,
+      255
+    ],
+    "outline": [
+      24,
+      26,
+      28
+    ],
+    "rig_family": "humanoid",
+    "appearance": {
+      "renderer": "white-outline-2.5d",
+      "rest_hand": "assets/hand-rest.png",
+      "thumb_hand": "assets/hand_thumb.png",
+      "shoes": {
+        "L": "assets/shoe_left.png",
+        "R": "assets/shoe_right.png"
+      }
+    }
+  }
+]

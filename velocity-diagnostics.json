@@ -1,0 +1,26 @@
+[
+  {
+    "character": "blank-base",
+    "joint": "knee.L",
+    "peak_accel_px_s2": 117316.217,
+    "peak_at_s": 1.722
+  },
+  {
+    "character": "blank-base",
+    "joint": "knee.R",
+    "peak_accel_px_s2": 117316.217,
+    "peak_at_s": 1.242
+  },
+  {
+    "character": "proportion-check",
+    "joint": "knee.L",
+    "peak_accel_px_s2": 116285.37,
+    "peak_at_s": 1.722
+  },
+  {
+    "character": "proportion-check",
+    "joint": "knee.R",
+    "peak_accel_px_s2": 116285.37,
+    "peak_at_s": 1.242
+  }
+]

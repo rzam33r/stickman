@@ -1,0 +1,33 @@
+{
+  "schema": "stick-biped-2.5d-v1",
+  "axes": {
+    "x": "forward",
+    "y": "up",
+    "z": "lateral"
+  },
+  "required_joints": [
+    "root",
+    "pelvis",
+    "neck",
+    "head",
+    "shoulder.L",
+    "elbow.L",
+    "wrist.L",
+    "hip.L",
+    "knee.L",
+    "ankle.L",
+    "shoulder.R",
+    "elbow.R",
+    "wrist.R",
+    "hip.R",
+    "knee.R",
+    "ankle.R"
+  ],
+  "projection": "orthographic; root trajectory independent of facing",
+  "supported_yaw_degrees": [
+    0,
+    68
+  ],
+  "appearance_compatibility": "biped body + face + left/right shoes + relaxed/thumb hand assets; not arbitrary single-image automatic retargeting",
+  "default_accessories": []
+}

@@ -1,0 +1,29 @@
+{
+  "motion_checks": [
+    {
+      "character": "blank-base",
+      "poses": 900,
+      "max_segment_length_error_px": 7.105427357601002e-14,
+      "minimum_ankle_height": 12.0,
+      "flat_stance_drift_px": 0,
+      "turn_support_drift_px": 2.5146551507759796e-14,
+      "largest_joint_step_per_1ms_px": 0.783294413576451,
+      "largest_step_at_s": 2.067,
+      "largest_step_joint": "knee.R"
+    },
+    {
+      "character": "proportion-check",
+      "poses": 900,
+      "max_segment_length_error_px": 8.526512829121202e-14,
+      "minimum_ankle_height": 12.0,
+      "flat_stance_drift_px": 0,
+      "turn_support_drift_px": 6.355287432313019e-14,
+      "largest_joint_step_per_1ms_px": 0.9268064782221024,
+      "largest_step_at_s": 1.106,
+      "largest_step_joint": "knee.R"
+    }
+  ],
+  "timestamp_deterministic": true,
+  "visual_quality_pass": false,
+  "note": "Numerical continuity, joint lengths and contact checks do not establish animation quality or rendered shoe contact."
+}
