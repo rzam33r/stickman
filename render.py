@@ -1,4 +1,4 @@
-from PIL import Image,ImageDraw,ImageFilter,ImageFont
+from PIL import Image,ImageDraw,ImageFilter,ImageFont,ImageChops
 import math,pathlib,subprocess,json,numpy as np
 from engine import *
 W,H=1280,720;S=2;
@@ -47,7 +47,25 @@ def actor(out,c,t,origin,scale=.78):
   # Asset ankle is at 32% width when facing right; compensate around its center.
   cx=x+7*sc*sag;cy=y-6*sc
   out.paste(shoe,(int(cx-shoe.width/2),int(cy-shoe.height/2)),shoe)
+ def mitt(side):
+  # The reference character has no fingers. Its hands are rounded mitts with
+  # a thumb that appears only when it means something, which is exactly why
+  # its thumbs-up reads at small size and a modelled five-fingered hand does
+  # not: at this scale a hand is a silhouette, not anatomy.
+  x,y=q['wrist.'+side];ex,ey=q['elbow.'+side];th=p['thumb'] if side=='L' else 0
+  ang=math.atan2(x-ex,y-ey)
+  r=15.5*sc;lw=round(3.2*sc)
+  if th>.04:
+   # Thumb points along the forearm, away from the elbow.
+   tl=r*(.55+1.05*th);tx,ty=x+math.sin(ang)*r*.55,y-math.cos(ang)*r*.55
+   ux,uy=math.sin(ang)*tl,-math.cos(ang)*tl
+   d.line([(tx,ty),(tx+ux,ty+uy)],fill=INK,width=round(r*.86+lw*2),joint='curve')
+   d.ellipse((tx+ux-(r*.43+lw),ty+uy-(r*.43+lw),tx+ux+(r*.43+lw),ty+uy+(r*.43+lw)),fill=INK)
+   d.line([(tx,ty),(tx+ux,ty+uy)],fill=WHITE,width=round(r*.86),joint='curve')
+   d.ellipse((tx+ux-r*.43,ty+uy-r*.43,tx+ux+r*.43,ty+uy+r*.43),fill=WHITE)
+  d.ellipse((x-r,y-r*1.06,x+r,y+r*1.06),fill=WHITE,outline=INK,width=lw)
  def hand(side):
+  if c.get('appearance',{}).get('hands')=='mitt':return mitt(side)
   x,y=q['wrist.'+side];th=p['thumb'] if side=='L' else 0
   ex,ey=q['elbow.'+side]
   if side=='R':
@@ -111,8 +129,44 @@ def actor(out,c,t,origin,scale=.78):
   md.line(ap,fill=255,width=round(23*sc),joint='curve')
   for xx,yy in ap:md.ellipse((xx-11.5*sc,yy-11.5*sc,xx+11.5*sc,yy+11.5*sc),fill=255)
  outline=mask.filter(ImageFilter.MaxFilter(2*int(round(1.5*sc))+1));layer=Image.new('RGB',out.size,INK);out.paste(layer,(0,0),outline);layer=Image.new('RGB',out.size,WHITE);out.paste(layer,(0,0),mask)
+ # ---- clothing ---------------------------------------------------------
+ # Not decoration. In the reference the shirt and trousers are what separate
+ # arm from torso and leg from leg: every edge that reads as an edge is a
+ # colour change, not a line. Drawn as flat blocks clipped to the silhouette
+ # that already exists, so the outline, the limbs and the motion are
+ # untouched -- this only says which parts of the same shape are cloth.
+ SHIRT=tuple(c.get('shirt',WHITE));TROUSERS=tuple(c.get('trousers',WHITE))
+ if 'shirt' in c or 'trousers' in c:
+  hem=py+c.get('hem',20)*sc
+  below=Image.new('L',out.size);ImageDraw.Draw(below).rectangle((0,hem,out.width,out.height),fill=255)
+  above=ImageChops.invert(below)
+  legs=Image.new('L',out.size);ld=ImageDraw.Draw(legs)
+  for side in ['R','L']:
+   lp=[q['hip.'+side],q['knee.'+side],q['leg_end.'+side]]
+   ld.line(lp,fill=255,width=round(35*sc),joint='curve')
+   for xx,yy in lp:ld.ellipse((xx-17.5*sc,yy-17.5*sc,xx+17.5*sc,yy+17.5*sc),fill=255)
+  # Sleeves stop part way down the upper arm, which is what makes the arm
+  # read as an arm against the body rather than merging into it.
+  sleeves=Image.new('L',out.size);sd=ImageDraw.Draw(sleeves)
+  for side in ['R','L']:
+   ax,ay=q['shoulder.'+side];bx,by=q['elbow.'+side];f=c.get('sleeve',.46)
+   ep=(mix(ax,bx,f),mix(ay,by,f))
+   sd.line([(ax,ay),ep],fill=255,width=round(27*sc),joint='curve')
+   for xx,yy in [(ax,ay),ep]:sd.ellipse((xx-13.5*sc,yy-13.5*sc,xx+13.5*sc,yy+13.5*sc),fill=255)
+  # The arms live inside the body mask too, so the shirt has to be the body
+  # minus the arms, or the sleeve runs all the way to the wrist and the whole
+  # point -- a white forearm reading against a coloured torso -- is lost.
+  arms=Image.new('L',out.size);ad=ImageDraw.Draw(arms)
+  for side in ['R','L']:
+   ap=[q['shoulder.'+side],q['elbow.'+side],q['wrist.'+side]]
+   ad.line(ap,fill=255,width=round(23*sc),joint='curve')
+   for xx,yy in ap:ad.ellipse((xx-11.5*sc,yy-11.5*sc,xx+11.5*sc,yy+11.5*sc),fill=255)
+  body=ImageChops.subtract(ImageChops.subtract(mask,legs),arms)
+  trouser=ImageChops.multiply(ImageChops.lighter(legs,ImageChops.multiply(mask,below)),mask)
+  shirt=ImageChops.multiply(ImageChops.lighter(ImageChops.multiply(body,above),sleeves),mask)
+  out.paste(TROUSERS,(0,0,out.width,out.height),trouser)
+  out.paste(SHIRT,(0,0,out.width,out.height),shirt)
  # A narrow shaded contour supplies volume without changing the joint system.
- from PIL import ImageChops
  inset=ImageChops.offset(mask,-max(1,round(5*sc)), -max(1,round(1*sc)))
  rim=ImageChops.subtract(mask,inset)
  rim=ImageChops.multiply(rim,Image.new('L',out.size,150))
@@ -127,7 +181,6 @@ def actor(out,c,t,origin,scale=.78):
  lp=[q['hip.R'],q['knee.R'],q['leg_end.R']]
  fd.line(lp,fill=255,width=round(35*sc),joint='curve')
  for xx,yy in lp:fd.ellipse((xx-17.5*sc,yy-17.5*sc,xx+17.5*sc,yy+17.5*sc),fill=255)
- from PIL import ImageChops
  edge=ImageChops.subtract(near.filter(ImageFilter.MaxFilter(2*max(1,round(1.2*sc))+1)),near)
  edge=ImageChops.multiply(edge,far)
  cutoff=Image.new('L',out.size);cd=ImageDraw.Draw(cutoff);cd.rectangle((0,py+27*sc,out.width,out.height),fill=255)

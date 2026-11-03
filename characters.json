@@ -29,8 +29,21 @@
       "shoes": {
         "L": "assets/shoe_left.png",
         "R": "assets/shoe_right.png"
-      }
-    }
+      },
+      "hands": "mitt"
+    },
+    "shirt": [
+      122,
+      193,
+      231
+    ],
+    "trousers": [
+      38,
+      40,
+      46
+    ],
+    "sleeve": 0.46,
+    "hem": 20
   },
   {
     "id": "proportion-check",
@@ -62,7 +75,20 @@
       "shoes": {
         "L": "assets/shoe_left.png",
         "R": "assets/shoe_right.png"
-      }
-    }
+      },
+      "hands": "mitt"
+    },
+    "shirt": [
+      122,
+      193,
+      231
+    ],
+    "trousers": [
+      38,
+      40,
+      46
+    ],
+    "sleeve": 0.46,
+    "hem": 20
   }
 ]
